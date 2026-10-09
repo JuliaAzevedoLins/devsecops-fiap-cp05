@@ -1,8 +1,16 @@
 # devsecops-fiap-cp05
 
-- **Aluna:** JULIA AZEVEDO LINS
-- **RM:** 98690
-- **Turma:** 4ESPY
+**Turma:** 4ESPY
+
+## Integrantes
+
+| Nome | RM |
+|---|---|
+| Felipe Cortez | 99750 |
+| Julia Lins | 98690 |
+| Luis Barreto | 99210 |
+| Victor Aranda | 99667 |
+| Guilherme Akio | 98582 |
 
 CP05 de DevSecOps e Cloud Computing (FIAP): **o pipeline DevSecOps completo**.
 
