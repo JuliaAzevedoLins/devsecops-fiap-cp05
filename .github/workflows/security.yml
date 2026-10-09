@@ -1,0 +1,40 @@
+name: Security Pipeline
+on: [push, pull_request]
+
+jobs:
+  # Barreira 1 (aula 17): segredos vazados no historico do Git
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Barreira 2 (aula 17): codigo vulneravel (SAST)
+  semgrep:
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep ci --config auto
+        env:
+          SEMGREP_RULES: p/default
+
+  # Barreira 3 (aula 18): imagem Docker com CVE critico
+  trivy:
+    runs-on: ubuntu-latest
+    needs: [gitleaks, semgrep]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build da imagem
+        run: docker build -t arcanjosa-site:${{ github.sha }} .
+      - name: Trivy (falha com CVE CRITICAL)
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.58.0 image \
+            --severity CRITICAL --ignore-unfixed --exit-code 1 \
+            arcanjosa-site:${{ github.sha }}
